@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/learn",
-    label: "L\u00e4r dig",
+    label: "Lär dig",
     icon: LearnIcon,
   },
   {

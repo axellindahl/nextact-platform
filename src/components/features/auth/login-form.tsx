@@ -89,7 +89,7 @@ export function LoginForm() {
                 disabled={magicLinkPending}
                 className="w-full rounded-lg bg-primary px-4 py-3 font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
               >
-                {magicLinkPending ? "Skickar..." : "Skicka magisk l\u00e4nk"}
+                {magicLinkPending ? "Skickar..." : "Skicka magisk länk"}
               </button>
             </form>
           )}

@@ -47,7 +47,7 @@ export default async function CoachPage() {
           AI-Coach
         </h1>
         <p className="mt-1 text-sm text-charcoal/60">
-          Din personliga mentala tr{"\u00E4"}ningspartner
+          Din personliga mentala tr{"ä"}ningspartner
         </p>
       </div>
       <div className="flex-1 overflow-hidden">

@@ -34,7 +34,7 @@ export async function loginWithPassword(
   });
 
   if (error) {
-    return { error: "Fel e-post eller l\u00f6senord. F\u00f6rs\u00f6k igen." };
+    return { error: "Fel e-post eller lösenord. Försök igen." };
   }
 
   redirect("/dashboard");
@@ -61,7 +61,7 @@ export async function loginWithMagicLink(
 
   if (error) {
     return {
-      error: "Kunde inte skicka magisk l\u00e4nk. F\u00f6rs\u00f6k igen.",
+      error: "Kunde inte skicka magisk länk. Försök igen.",
     };
   }
 
@@ -78,7 +78,7 @@ export async function loginWithOAuth(provider: "google" | "apple") {
   });
 
   if (error || !data.url) {
-    return { error: "Kunde inte starta inloggning. F\u00f6rs\u00f6k igen." };
+    return { error: "Kunde inte starta inloggning. Försök igen." };
   }
 
   redirect(data.url);
@@ -116,7 +116,7 @@ export async function register(
   });
 
   if (error) {
-    return { error: "Registreringen misslyckades. F\u00f6rs\u00f6k igen." };
+    return { error: "Registreringen misslyckades. Försök igen." };
   }
 
   redirect("/dashboard");

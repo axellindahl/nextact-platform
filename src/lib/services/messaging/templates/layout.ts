@@ -31,9 +31,9 @@ export function emailLayout(content: string): string {
           <tr>
             <td style="padding:24px 32px;border-top:1px solid #E8EBF0;">
               <p style="margin:0;font-size:12px;color:#8B95A5;line-height:1.5;">
-                Next Act \u2014 Mental tr\u00E4ning f\u00F6r idrottare<br />
+                Next Act — Mental träning för idrottare<br />
                 <a href="${APP_URL}/profil/notifikationer" style="color:#8B95A5;text-decoration:underline;">Hantera notifikationer</a>
-                &nbsp;\u00B7&nbsp;
+                &nbsp;·&nbsp;
                 <a href="${APP_URL}/avregistrera" style="color:#8B95A5;text-decoration:underline;">Avprenumerera</a>
               </p>
             </td>

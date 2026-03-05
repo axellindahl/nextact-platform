@@ -5,7 +5,7 @@ import { LoginForm } from "@/components/features/auth/login-form";
 export const metadata: Metadata = {
   title: "Logga in — Next Act",
   description:
-    "Logga in p\u00e5 Next Act f\u00f6r att forts\u00e4tta din mentala tr\u00e4ning.",
+    "Logga in på Next Act för att fortsätta din mentala träning.",
 };
 
 export default function LoginPage() {
@@ -13,10 +13,10 @@ export default function LoginPage() {
     <div className="rounded-2xl bg-white p-8 shadow-sm">
       <div className="mb-8 text-center">
         <h1 className="font-heading text-2xl font-bold text-navy">
-          V\u00e4lkommen tillbaka
+          Välkommen tillbaka
         </h1>
         <p className="mt-2 text-charcoal">
-          Logga in f\u00f6r att forts\u00e4tta din tr\u00e4ning
+          Logga in för att fortsätta din träning
         </p>
       </div>
 

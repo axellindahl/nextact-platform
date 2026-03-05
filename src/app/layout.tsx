@@ -3,13 +3,13 @@ import { montserrat, sourceSans } from "@/styles/fonts";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "Next Act — Mental tr\u00e4ning f\u00f6r idrottare",
+  title: "Next Act — Mental träning för idrottare",
   description:
-    "Next Act hj\u00e4lper idrottare att bygga mental styrka genom ACT-baserad tr\u00e4ning. Korta lektioner, AI-coachning och personlig utveckling — allt i en plattform.",
+    "Next Act hjälper idrottare att bygga mental styrka genom ACT-baserad träning. Korta lektioner, AI-coachning och personlig utveckling — allt i en plattform.",
   openGraph: {
-    title: "Next Act — Mental tr\u00e4ning f\u00f6r idrottare",
+    title: "Next Act — Mental träning för idrottare",
     description:
-      "Bygg mental styrka med ACT-baserad tr\u00e4ning, AI-coachning och mikrol\u00e4rande.",
+      "Bygg mental styrka med ACT-baserad träning, AI-coachning och mikrolärande.",
     type: "website",
     locale: "sv_SE",
   },

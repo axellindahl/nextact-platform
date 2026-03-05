@@ -90,11 +90,11 @@ export function ChatInterface({
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
               <p className="text-lg font-heading font-semibold text-charcoal">
-                Hej! Jag {"\u00E4"}r din AI-coach.
+                Hej! Jag {"ä"}r din AI-coach.
               </p>
               <p className="mt-2 text-sm text-charcoal/60">
-                St{"\u00E4"}ll en fr{"\u00E5"}ga om mental tr{"\u00E4"}ning,
-                prestation eller n{"\u00E5"}got annat som r{"\u00F6"}r din
+                St{"ä"}ll en fr{"å"}ga om mental tr{"ä"}ning,
+                prestation eller n{"å"}got annat som r{"ö"}r din
                 idrott.
               </p>
             </div>
@@ -134,19 +134,19 @@ export function ChatInterface({
       {limitReached && (
         <div className="mx-4 mb-2 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
           <p className="font-medium">
-            Du har n{"\u00E5"}tt din gr{"\u00E4"}ns f{"\u00F6"}r antal
+            Du har n{"å"}tt din gr{"ä"}ns f{"ö"}r antal
             meddelanden.
           </p>
           <p className="mt-1 text-amber-700">
-            Uppgradera f{"\u00F6"}r fler meddelanden eller v{"\u00E4"}nta tills
-            din gr{"\u00E4"}ns {"\u00E5"}terst{"\u00E4"}lls.
+            Uppgradera f{"ö"}r fler meddelanden eller v{"ä"}nta tills
+            din gr{"ä"}ns {"å"}terst{"ä"}lls.
           </p>
         </div>
       )}
 
       {error && !limitReached && (
         <div className="mx-4 mb-2 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">
-          N{"\u00E5"}got gick fel. F{"\u00F6"}rs{"\u00F6"}k igen.
+          N{"å"}got gick fel. F{"ö"}rs{"ö"}k igen.
         </div>
       )}
 
@@ -159,7 +159,7 @@ export function ChatInterface({
             onChange={(e) => setInput(e.target.value)}
             placeholder={
               limitReached
-                ? "Meddelandegr\u00E4nsen n\u00E5dd..."
+                ? "Meddelandegränsen nådd..."
                 : "Skriv ett meddelande..."
             }
             className="flex-1 rounded-full border border-navy/15 bg-off-white px-4 py-2.5 text-sm text-charcoal placeholder:text-charcoal/40 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"

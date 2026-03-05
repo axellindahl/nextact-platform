@@ -19,10 +19,10 @@ export async function generateMetadata({
     .eq("status", "published")
     .single();
 
-  if (!post) return { title: "Artikel hittades inte \u2014 Next Act" };
+  if (!post) return { title: "Artikel hittades inte — Next Act" };
 
   return {
-    title: `${post.title} \u2014 Next Act Blogg`,
+    title: `${post.title} — Next Act Blogg`,
     description: post.excerpt ?? undefined,
   };
 }

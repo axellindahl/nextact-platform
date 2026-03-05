@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Kontakt \u2014 Next Act",
-  description: "Kontakta Next Act-teamet. Vi hj\u00e4lper dig g\u00e4rna!",
+  title: "Kontakt — Next Act",
+  description: "Kontakta Next Act-teamet. Vi hjälper dig gärna!",
 };
 
 export default function ContactPage() {
@@ -14,7 +14,7 @@ export default function ContactPage() {
             Kontakta oss
           </h1>
           <p className="mt-4 text-lg text-white/60">
-            Har du fr\u00e5gor? Vi svarar g\u00e4rna.
+            Har du frågor? Vi svarar gärna.
           </p>
         </div>
       </section>
@@ -69,7 +69,7 @@ export default function ContactPage() {
                   name="message"
                   required
                   rows={5}
-                  placeholder="Beskriv ditt \u00e4rende..."
+                  placeholder="Beskriv ditt ärende..."
                   className="mt-1 w-full resize-none rounded-lg border border-light-gray px-4 py-3 text-navy placeholder:text-light-gray focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
@@ -84,7 +84,7 @@ export default function ContactPage() {
 
             <div className="mt-8 border-t border-off-white-alt pt-6 text-center">
               <p className="text-sm text-charcoal">
-                Du kan ocks\u00e5 n\u00e5 oss direkt p\u00e5
+                Du kan också nå oss direkt på
               </p>
               <a
                 href="mailto:kontakt@nextact.se"

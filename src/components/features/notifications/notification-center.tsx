@@ -31,9 +31,9 @@ const NOTIFICATION_ICONS: Record<NotificationType, string> = {
 };
 
 const NOTIFICATION_LABELS: Record<NotificationType, string> = {
-  module_unlocked: "Ny modul uppl\u00e5st",
-  streak_reminder: "Streak-p\u00e5minnelse",
-  exercise_feedback: "\u00c5terkoppling",
+  module_unlocked: "Ny modul upplåst",
+  streak_reminder: "Streak-påminnelse",
+  exercise_feedback: "Återkoppling",
   announcement: "Nyhet",
 };
 
@@ -110,7 +110,7 @@ export function NotificationCenter() {
         type="button"
         onClick={() => setOpen(!open)}
         className="relative rounded-lg p-2 text-charcoal transition-colors hover:bg-off-white-alt hover:text-navy"
-        aria-label={`Notifikationer${unreadCount > 0 ? ` (${unreadCount} ol\u00e4sta)` : ""}`}
+        aria-label={`Notifikationer${unreadCount > 0 ? ` (${unreadCount} olästa)` : ""}`}
       >
         <svg
           className="h-5 w-5"
@@ -146,7 +146,7 @@ export function NotificationCenter() {
                 onClick={handleMarkAllRead}
                 className="text-xs text-primary hover:text-primary-hover"
               >
-                Markera alla som l\u00e4sta
+                Markera alla som lästa
               </button>
             )}
           </div>
@@ -161,7 +161,7 @@ export function NotificationCenter() {
 
             {!isPending && notifications.length === 0 && (
               <div className="p-6 text-center text-sm text-charcoal">
-                Inga notifikationer \u00e4nnu.
+                Inga notifikationer ännu.
               </div>
             )}
 

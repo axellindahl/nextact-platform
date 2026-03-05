@@ -21,10 +21,10 @@ const SPORTS = [
 ];
 
 const AGE_BRACKETS = [
-  { value: "13-14", label: "13\u201314 \u00e5r" },
-  { value: "15-18", label: "15\u201318 \u00e5r" },
-  { value: "19-25", label: "19\u201325 \u00e5r" },
-  { value: "26+", label: "26+ \u00e5r" },
+  { value: "13-14", label: "13–14 år" },
+  { value: "15-18", label: "15–18 år" },
+  { value: "19-25", label: "19–25 år" },
+  { value: "26+", label: "26+ år" },
 ];
 
 export function RegisterForm() {

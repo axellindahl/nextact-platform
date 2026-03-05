@@ -3,9 +3,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Blogg \u2014 Next Act",
+  title: "Blogg — Next Act",
   description:
-    "L\u00e4s artiklar om mental tr\u00e4ning, ACT och idrottspsykologi.",
+    "Läs artiklar om mental träning, ACT och idrottspsykologi.",
 };
 
 export default async function BlogPage() {
@@ -37,7 +37,7 @@ export default async function BlogPage() {
             Blogg
           </h1>
           <p className="mt-4 text-lg text-white/60">
-            Artiklar om mental tr\u00e4ning, ACT och idrottspsykologi.
+            Artiklar om mental träning, ACT och idrottspsykologi.
           </p>
         </div>
       </section>
@@ -47,7 +47,7 @@ export default async function BlogPage() {
           {posts.length === 0 ? (
             <div className="text-center">
               <p className="text-lg text-charcoal">
-                Inga artiklar publicerade \u00e4nnu. Kom tillbaka snart!
+                Inga artiklar publicerade ännu. Kom tillbaka snart!
               </p>
             </div>
           ) : (

@@ -24,7 +24,7 @@ function renderMarkdown(text: string): ReactNode[] {
         return <strong key={`${i}-${j}`}>{part.slice(2, -2)}</strong>;
       }
       if (line.startsWith("- ")) {
-        return j === 0 ? `\u2022 ${part.slice(2)}` : part;
+        return j === 0 ? `• ${part.slice(2)}` : part;
       }
       return part;
     });

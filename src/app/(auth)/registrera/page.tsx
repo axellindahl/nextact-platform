@@ -5,7 +5,7 @@ import { RegisterForm } from "@/components/features/auth/register-form";
 export const metadata: Metadata = {
   title: "Skapa konto — Next Act",
   description:
-    "Registrera dig p\u00e5 Next Act och b\u00f6rja din mentala tr\u00e4ning idag.",
+    "Registrera dig på Next Act och börja din mentala träning idag.",
 };
 
 export default function RegisterPage() {
@@ -16,7 +16,7 @@ export default function RegisterPage() {
           Skapa konto
         </h1>
         <p className="mt-2 text-charcoal">
-          B\u00f6rja din mentala tr\u00e4ningsresa idag
+          Börja din mentala träningsresa idag
         </p>
       </div>
 

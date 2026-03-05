@@ -51,7 +51,7 @@ export async function getConversations(limit: number = 20) {
     .limit(limit);
 
   if (error) {
-    return { error: "Kunde inte h\u00E4mta samtal." };
+    return { error: "Kunde inte hämta samtal." };
   }
 
   return { data };
@@ -74,7 +74,7 @@ export async function getConversationMessages(conversationId: string) {
     .order("created_at", { ascending: true });
 
   if (error) {
-    return { error: "Kunde inte h\u00E4mta meddelanden." };
+    return { error: "Kunde inte hämta meddelanden." };
   }
 
   return { data };

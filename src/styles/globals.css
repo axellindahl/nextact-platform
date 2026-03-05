@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: "Montserrat", sans-serif;
+  --font-body: "Source Sans Pro", sans-serif;
+
+  --color-primary: #2670E6;
+  --color-primary-hover: #4582E4;
+  --color-navy: #181827;
+  --color-charcoal: #3C3950;
+  --color-light-gray: #B7C6C9;
+  --color-off-white: #F9F9F9;
+  --color-off-white-alt: #F0F3F2;
+  --color-success: #4AD48C;
+  --color-cyan: #1DBDD4;
+}

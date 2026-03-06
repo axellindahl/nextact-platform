@@ -10,6 +10,9 @@ import { QuizCard } from "@/components/features/lms/cards/quiz-card";
 import { CalloutCard } from "@/components/features/lms/cards/callout-card";
 import { AiPromptCard } from "@/components/features/lms/cards/ai-prompt-card";
 import { CompletionCard } from "@/components/features/lms/cards/completion-card";
+import { StoryCard } from "@/components/features/lms/cards/story-card";
+import { WeeklyTaskCard } from "@/components/features/lms/cards/weekly-task-card";
+import { BollplankPromptCard } from "@/components/features/lms/cards/bollplank-prompt-card";
 
 // ── Content block types ────────────────────────────────────────────
 
@@ -73,6 +76,10 @@ type CompletionBlock = {
   moduleHref: string;
 };
 
+type StoryBlock = { type: "story"; content: string };
+type WeeklyTaskBlock = { type: "weekly_task"; tasks: string[]; moduleTitle?: string };
+type BollplankPromptBlock = { type: "bollplank_prompt"; prompt: string };
+
 export type ContentBlock =
   | VideoBlock
   | TextBlock
@@ -82,7 +89,10 @@ export type ContentBlock =
   | QuizBlock
   | CalloutBlock
   | AiPromptBlock
-  | CompletionBlock;
+  | CompletionBlock
+  | StoryBlock
+  | WeeklyTaskBlock
+  | BollplankPromptBlock;
 
 // ── Feed component ─────────────────────────────────────────────────
 
@@ -202,6 +212,12 @@ export function LessonFeed({
             moduleHref={block.moduleHref}
           />
         );
+      case "story":
+        return <StoryCard content={block.content} />;
+      case "weekly_task":
+        return <WeeklyTaskCard tasks={block.tasks} moduleTitle={block.moduleTitle} />;
+      case "bollplank_prompt":
+        return <BollplankPromptCard prompt={block.prompt} />;
     }
   }
 

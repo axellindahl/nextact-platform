@@ -71,7 +71,7 @@ CREATE INDEX IF NOT EXISTS idx_sms_queue_user_id
 -- Triggers
 -- ---------------------------------------------------------------------------
 
-CREATE TRIGGER on_toughness_model_data_updated
+CREATE OR REPLACE TRIGGER on_toughness_model_data_updated
   BEFORE UPDATE ON public.toughness_model_data
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
@@ -83,21 +83,28 @@ ALTER TABLE public.toughness_model_data ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sms_queue ENABLE ROW LEVEL SECURITY;
 
 -- toughness_model_data policies
+DROP POLICY IF EXISTS "toughness_model_data_select_own_or_admin" ON public.toughness_model_data;
 CREATE POLICY "toughness_model_data_select_own_or_admin" ON public.toughness_model_data
   FOR SELECT USING (auth.uid() = user_id OR public.user_role() = 'admin');
 
+DROP POLICY IF EXISTS "toughness_model_data_insert_own" ON public.toughness_model_data;
 CREATE POLICY "toughness_model_data_insert_own" ON public.toughness_model_data
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "toughness_model_data_update_own" ON public.toughness_model_data;
 CREATE POLICY "toughness_model_data_update_own" ON public.toughness_model_data
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 -- sms_queue policies (only service role / admin can insert; users can see their own)
+DROP POLICY IF EXISTS "sms_queue_select_own_or_admin" ON public.sms_queue;
 CREATE POLICY "sms_queue_select_own_or_admin" ON public.sms_queue
   FOR SELECT USING (auth.uid() = user_id OR public.user_role() = 'admin');
 
+DROP POLICY IF EXISTS "sms_queue_insert_admin" ON public.sms_queue;
 CREATE POLICY "sms_queue_insert_admin" ON public.sms_queue
   FOR INSERT WITH CHECK (public.user_role() = 'admin');
 
+DROP POLICY IF EXISTS "sms_queue_update_admin" ON public.sms_queue;
 CREATE POLICY "sms_queue_update_admin" ON public.sms_queue
   FOR UPDATE USING (public.user_role() = 'admin');

@@ -4,6 +4,13 @@
 -- 8 modules (0–7), 34 lessons, full Swedish content
 -- =============================================================================
 
+-- Clear existing seed data before re-seeding
+DELETE FROM public.lesson_progress;
+DELETE FROM public.module_progress;
+DELETE FROM public.lessons;
+DELETE FROM public.modules;
+DELETE FROM public.programs;
+
 DO $$
 DECLARE
   prog_id   UUID;
@@ -206,7 +213,7 @@ VALUES (
   1,
   '[
     {"type":"text","title":"Föreställ dig din 80-årsdag","content":"Föreställ dig att du är 80 år. Det är din födelsedag och dina gamla lagkamrater, din familj och dina vänner är samlade för att hylla dig. En efter en reser de sig och berättar om vem du var som idrottare och människa. Vad säger de? Vilka ord använder de? Berättar de om en person som spelade det säkra spelet, eller om någon som alltid vågade? Berättar de om en lagkamrat som drog andra nedåt eller en som lyfte laget? Den här övningen hjälper dig att se bortom resultat och statistik — till vem du vill ha varit."},
-    {"type":"exercise_text","prompt":"Vad säger de om dig som idrottare och människa? Vad vill du att de ska minnas?","scaffolding":["Vilka egenskaper vill du ha haft?","Hur vill du ha behandlat dina lagkamrater?"],"toughnessKey":"varderad_riktning.ariosdagsovning"},
+    {"type":"exercise_text","prompt":"Vad säger de om dig som idrottare och människa? Vad vill du att de ska minnas?","scaffolding":["Vilka egenskaper vill du ha haft?","Hur vill du ha behandlat dina lagkamrater?"],"toughnessKey":"varderad_riktning.attioarsdag"},
     {"type":"completion"}
   ]'::jsonb,
   'published'
@@ -435,7 +442,7 @@ VALUES (
   4,
   '[
     {"type":"text","title":"Byt läktaraktioner mot nyckelaktioner","content":"Den här veckan tränar vi på att aktivt byta läktaraktioner mot nyckelaktioner. Det kräver inte att du presterar perfekt — det kräver att du väljer rätt beteende i ett konkret ögonblick. En gång per träning räcker."},
-    {"type":"weekly_task","tasks":["Identifiera en läktaraktion du gör regelbundet. Bestäm dig för att byta ut den mot en nyckelaction under nästa träning. Förbered dig mentalt innan träningen: när situationen kommer, vad gör du?","Observera ditt lags mentala energi under en match eller träning. Vad bidrar du med? Vad tar du med dig in?","Skriv ned tre nyckelaktioner du vill ha mer av i ditt spel. Var konkret — inte att jag ska vara modigare utan vad du faktiskt gör."]},
+    {"type":"weekly_task","tasks":["Identifiera en läktaraktion du gör regelbundet. Bestäm dig för att byta ut den mot en nyckelaktioner under nästa träning. Förbered dig mentalt innan träningen: när situationen kommer, vad gör du?","Observera ditt lags mentala energi under en match eller träning. Vad bidrar du med? Vad tar du med dig in?","Skriv ned tre nyckelaktioner du vill ha mer av i ditt spel. Var konkret — inte att jag ska vara modigare utan vad du faktiskt gör."]},
     {"type":"bollplank_prompt","prompt":"Vill du prata igenom skillnaden mellan dina läktaraktioner och nyckelaktioner med ditt bollplank?"},
     {"type":"completion"}
   ]'::jsonb,

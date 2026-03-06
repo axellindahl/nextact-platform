@@ -5,6 +5,7 @@ import { ProfileForm } from "@/components/features/profile/profile-form";
 import { NotificationForm } from "@/components/features/profile/notification-form";
 import { DeleteAccountButton } from "@/components/features/profile/delete-account-button";
 import { SubscriptionCard } from "@/components/features/profile/subscription-card";
+import { TrainingScheduleForm } from "@/components/features/profile/training-schedule-form";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -39,6 +40,13 @@ export default async function ProfilePage() {
   const ageBracket = profile?.age_bracket ?? "";
   const tier = profile?.subscription_tier ?? "free";
   const preferredLanguage = profile?.preferred_language ?? "sv";
+  // TODO: training_schedule and phone_number not yet in generated types — regenerate after migration
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const profileAny = profile as any;
+  const trainingSchedule = Array.isArray(profileAny?.training_schedule)
+    ? (profileAny.training_schedule as { day: string; time: string }[])
+    : [];
+  const phoneNumber = (profileAny?.phone_number as string | null) ?? "";
 
   const channels = Array.isArray(notificationPrefs?.preferred_channels)
     ? (notificationPrefs.preferred_channels as string[])
@@ -93,6 +101,17 @@ export default async function ProfilePage() {
           initialChannels={channels}
           initialQuietStart={quietStart}
           initialQuietEnd={quietEnd}
+        />
+      </Card>
+
+      {/* Training Schedule */}
+      <Card shadow>
+        <h2 className="mb-4 font-heading text-lg font-semibold text-navy">
+          Träningstider &amp; SMS-påminnelser
+        </h2>
+        <TrainingScheduleForm
+          initialSchedule={trainingSchedule}
+          initialPhoneNumber={phoneNumber}
         />
       </Card>
 

@@ -50,6 +50,42 @@ export async function updateNotificationPreferences(prefs: {
   if (error) throw new Error(error.message);
 }
 
+export async function saveTrainingSchedule(
+  schedule: { day: string; time: string }[]
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // TODO: training_schedule not yet in generated types — regenerate after migration
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from("profiles")
+    .update({ training_schedule: schedule })
+    .eq("id", user.id);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function savePhoneNumber(phoneNumber: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // TODO: phone_number not yet in generated types — regenerate after migration
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from("profiles")
+    .update({ phone_number: phoneNumber })
+    .eq("id", user.id);
+
+  if (error) throw new Error(error.message);
+}
+
 export async function deleteAccount() {
   const supabase = await createClient();
   const {

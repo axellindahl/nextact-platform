@@ -6,27 +6,6 @@ import type { AuthResult } from "@/lib/actions/auth";
 
 const initialState: AuthResult = {};
 
-const SPORTS = [
-  { value: "fotboll", label: "Fotboll" },
-  { value: "ishockey", label: "Ishockey" },
-  { value: "handboll", label: "Handboll" },
-  { value: "innebandy", label: "Innebandy" },
-  { value: "basket", label: "Basket" },
-  { value: "friidrott", label: "Friidrott" },
-  { value: "simning", label: "Simning" },
-  { value: "tennis", label: "Tennis" },
-  { value: "golf", label: "Golf" },
-  { value: "ridsport", label: "Ridsport" },
-  { value: "annat", label: "Annat" },
-];
-
-const AGE_BRACKETS = [
-  { value: "13-14", label: "13–14 år" },
-  { value: "15-18", label: "15–18 år" },
-  { value: "19-25", label: "19–25 år" },
-  { value: "26+", label: "26+ år" },
-];
-
 export function RegisterForm() {
   const [state, formAction, pending] = useActionState(register, initialState);
 
@@ -122,46 +101,22 @@ export function RegisterForm() {
 
         <div>
           <label
-            htmlFor="reg-sport"
+            htmlFor="reg-phone"
             className="block text-sm font-medium text-navy"
           >
-            Sport
+            Mobilnummer
           </label>
-          <select
-            id="reg-sport"
-            name="sport"
+          <input
+            id="reg-phone"
+            name="phoneNumber"
+            type="tel"
             required
-            className="mt-1 w-full rounded-lg border border-light-gray px-4 py-3 text-navy focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          >
-            <option value="">V&auml;lj din sport</option>
-            {SPORTS.map((sport) => (
-              <option key={sport.value} value={sport.value}>
-                {sport.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label
-            htmlFor="reg-age"
-            className="block text-sm font-medium text-navy"
-          >
-            &Aring;ldersgrupp
-          </label>
-          <select
-            id="reg-age"
-            name="ageBracket"
-            required
-            className="mt-1 w-full rounded-lg border border-light-gray px-4 py-3 text-navy focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          >
-            <option value="">V&auml;lj &aring;ldersgrupp</option>
-            {AGE_BRACKETS.map((bracket) => (
-              <option key={bracket.value} value={bracket.value}>
-                {bracket.label}
-              </option>
-            ))}
-          </select>
+            placeholder="+46701234567"
+            className="mt-1 w-full rounded-lg border border-light-gray px-4 py-3 text-navy placeholder:text-light-gray focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+          <p className="mt-1 text-xs text-charcoal">
+            Används för att skicka veckouppgifter via SMS
+          </p>
         </div>
 
         <button

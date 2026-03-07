@@ -92,8 +92,7 @@ export async function register(
     email: formData.get("email"),
     password: formData.get("password"),
     displayName: formData.get("displayName"),
-    sport: formData.get("sport"),
-    ageBracket: formData.get("ageBracket"),
+    phoneNumber: formData.get("phoneNumber"),
   };
 
   const parsed = registerSchema.safeParse(raw);
@@ -102,21 +101,27 @@ export async function register(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data: signUpData, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
       emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
       data: {
         display_name: parsed.data.displayName,
-        sport: parsed.data.sport,
-        age_bracket: parsed.data.ageBracket,
       },
     },
   });
 
   if (error) {
     return { error: "Registreringen misslyckades. Försök igen." };
+  }
+
+  // Save phone number to profile (trigger creates the profile row on signUp)
+  if (signUpData.user) {
+    await supabase
+      .from("profiles")
+      .update({ phone_number: parsed.data.phoneNumber })
+      .eq("id", signUpData.user.id);
   }
 
   redirect("/dashboard");

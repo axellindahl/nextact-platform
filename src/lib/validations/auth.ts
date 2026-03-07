@@ -13,8 +13,7 @@ export const registerSchema = z.object({
   email: z.email("Ange en giltig e-postadress"),
   password: z.string().min(8, "Lösenordet måste vara minst 8 tecken"),
   displayName: z.string().min(2, "Namnet måste vara minst 2 tecken"),
-  sport: z.string().min(1, "Välj en sport"),
-  ageBracket: z.enum(["13-14", "15-18", "19-25", "26+"]),
+  phoneNumber: z.string().min(7, "Ange ett giltigt mobilnummer"),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

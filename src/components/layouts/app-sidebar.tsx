@@ -4,36 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
-  {
-    href: "/dashboard",
-    label: "Dashboard",
-    icon: DashboardIcon,
-  },
-  {
-    href: "/learn",
-    label: "Lär dig",
-    icon: LearnIcon,
-  },
-  {
-    href: "/coach",
-    label: "Coach",
-    icon: CoachIcon,
-  },
-  {
-    href: "/progress",
-    label: "Framsteg",
-    icon: ProgressIcon,
-  },
-  {
-    href: "/tuffhetsmodellen",
-    label: "Tuffhetsmodellen",
-    icon: TuffhetsmodellenIcon,
-  },
-  {
-    href: "/profile",
-    label: "Profil",
-    icon: ProfileIcon,
-  },
+  { href: "/dashboard", label: "Dashboard", icon: DashboardIcon },
+  { href: "/learn", label: "Lär dig", icon: LearnIcon },
+  { href: "/coach", label: "Bollplank", icon: CoachIcon },
+  { href: "/progress", label: "Framsteg", icon: ProgressIcon },
+  { href: "/tuffhetsmodellen", label: "Tuffhetsmodellen", icon: TuffhetsmodellenIcon },
+  { href: "/profile", label: "Profil", icon: ProfileIcon },
 ];
 
 interface AppSidebarProps {
@@ -47,19 +23,19 @@ export function AppSidebar({ userName, avatarUrl }: AppSidebarProps) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-off-white-alt bg-white lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-dark lg:flex">
         {/* Logo */}
         <div className="flex h-16 items-center px-6">
           <Link
             href="/dashboard"
-            className="font-heading text-xl font-bold text-navy"
+            className="font-heading text-xl font-bold text-white"
           >
             Next Act
           </Link>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav className="flex-1 space-y-0.5 px-3 py-4">
           {NAV_ITEMS.map((item) => {
             const isActive =
               pathname === item.href || pathname.startsWith(item.href + "/");
@@ -67,10 +43,10 @@ export function AppSidebar({ userName, avatarUrl }: AppSidebarProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-charcoal hover:bg-off-white-alt hover:text-navy"
+                    ? "border-l-2 border-primary bg-white/10 text-white"
+                    : "border-l-2 border-transparent text-gray-400 hover:bg-white/5 hover:text-white"
                 }`}
               >
                 <item.icon active={isActive} />
@@ -81,9 +57,9 @@ export function AppSidebar({ userName, avatarUrl }: AppSidebarProps) {
         </nav>
 
         {/* User section */}
-        <div className="border-t border-off-white-alt p-4">
+        <div className="border-t border-white/10 p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white">
               {avatarUrl ? (
                 <img
                   src={avatarUrl}
@@ -94,7 +70,7 @@ export function AppSidebar({ userName, avatarUrl }: AppSidebarProps) {
                 (userName?.[0] ?? "?").toUpperCase()
               )}
             </div>
-            <span className="truncate text-sm font-medium text-navy">
+            <span className="truncate text-sm font-medium text-gray-300">
               {userName ?? "Idrottare"}
             </span>
           </div>
@@ -102,7 +78,7 @@ export function AppSidebar({ userName, avatarUrl }: AppSidebarProps) {
       </aside>
 
       {/* Mobile bottom tab bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-off-white-alt bg-white lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex bg-dark lg:hidden">
         {NAV_ITEMS.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
@@ -111,7 +87,7 @@ export function AppSidebar({ userName, avatarUrl }: AppSidebarProps) {
               key={item.href}
               href={item.href}
               className={`flex flex-1 flex-col items-center gap-1 py-2 text-[10px] font-medium transition-colors ${
-                isActive ? "text-primary" : "text-charcoal"
+                isActive ? "text-primary" : "text-gray-500"
               }`}
             >
               <item.icon active={isActive} />
@@ -127,7 +103,7 @@ export function AppSidebar({ userName, avatarUrl }: AppSidebarProps) {
 function DashboardIcon({ active }: { active: boolean }) {
   return (
     <svg
-      className={`h-5 w-5 ${active ? "text-primary" : "text-charcoal"}`}
+      className={`h-5 w-5 ${active ? "text-white" : "text-gray-400"}`}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -145,7 +121,7 @@ function DashboardIcon({ active }: { active: boolean }) {
 function LearnIcon({ active }: { active: boolean }) {
   return (
     <svg
-      className={`h-5 w-5 ${active ? "text-primary" : "text-charcoal"}`}
+      className={`h-5 w-5 ${active ? "text-white" : "text-gray-400"}`}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -163,7 +139,7 @@ function LearnIcon({ active }: { active: boolean }) {
 function CoachIcon({ active }: { active: boolean }) {
   return (
     <svg
-      className={`h-5 w-5 ${active ? "text-primary" : "text-charcoal"}`}
+      className={`h-5 w-5 ${active ? "text-white" : "text-gray-400"}`}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -181,7 +157,7 @@ function CoachIcon({ active }: { active: boolean }) {
 function ProgressIcon({ active }: { active: boolean }) {
   return (
     <svg
-      className={`h-5 w-5 ${active ? "text-primary" : "text-charcoal"}`}
+      className={`h-5 w-5 ${active ? "text-white" : "text-gray-400"}`}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -199,7 +175,7 @@ function ProgressIcon({ active }: { active: boolean }) {
 function ProfileIcon({ active }: { active: boolean }) {
   return (
     <svg
-      className={`h-5 w-5 ${active ? "text-primary" : "text-charcoal"}`}
+      className={`h-5 w-5 ${active ? "text-white" : "text-gray-400"}`}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -217,7 +193,7 @@ function ProfileIcon({ active }: { active: boolean }) {
 function TuffhetsmodellenIcon({ active }: { active: boolean }) {
   return (
     <svg
-      className={`h-5 w-5 ${active ? "text-primary" : "text-charcoal"}`}
+      className={`h-5 w-5 ${active ? "text-white" : "text-gray-400"}`}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"

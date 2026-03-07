@@ -30,6 +30,7 @@ export async function markLessonCompleted(lessonId: string) {
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
+  // 1. Mark lesson as completed
   const { error } = await supabase
     .from("lesson_progress")
     .update({
@@ -40,6 +41,48 @@ export async function markLessonCompleted(lessonId: string) {
     .eq("lesson_id", lessonId);
 
   if (error) throw new Error(error.message);
+
+  // 2. Find which module this lesson belongs to
+  const { data: lesson } = await supabase
+    .from("lessons")
+    .select("module_id")
+    .eq("id", lessonId)
+    .single();
+
+  if (!lesson?.module_id) return;
+  const moduleId = lesson.module_id;
+
+  // 3. Count total and completed lessons in this module
+  const { data: allLessons } = await supabase
+    .from("lessons")
+    .select("id")
+    .eq("module_id", moduleId)
+    .eq("status", "published");
+
+  const totalCount = allLessons?.length ?? 0;
+  const lessonIds = (allLessons ?? []).map((l) => l.id);
+
+  const { data: completedLessons } = await supabase
+    .from("lesson_progress")
+    .select("lesson_id")
+    .eq("user_id", user.id)
+    .eq("status", "completed")
+    .in("lesson_id", lessonIds);
+
+  const completedCount = completedLessons?.length ?? 0;
+  const isModuleComplete = completedCount >= totalCount && totalCount > 0;
+
+  // 4. Upsert module_progress — this is what unlocks the next module
+  await supabase.from("module_progress").upsert(
+    {
+      user_id: user.id,
+      module_id: moduleId,
+      lessons_completed: completedCount,
+      lessons_total: totalCount,
+      completed_at: isModuleComplete ? new Date().toISOString() : null,
+    },
+    { onConflict: "user_id,module_id" }
+  );
 }
 
 export async function submitExerciseResponse(

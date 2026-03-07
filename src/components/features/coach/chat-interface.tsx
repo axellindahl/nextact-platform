@@ -81,6 +81,13 @@ export function ChatInterface({
       {/* Safety disclaimer banner */}
       <ChatDisclaimer />
 
+      {/* Chat panel header */}
+      <div className="border-b border-navy/10 px-4 py-3">
+        <h2 className="font-heading font-semibold text-charcoal">
+          Ditt mentala bollplank
+        </h2>
+      </div>
+
       {/* Messages area */}
       <div
         ref={scrollRef}

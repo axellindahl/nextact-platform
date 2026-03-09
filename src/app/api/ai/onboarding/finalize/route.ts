@@ -73,15 +73,21 @@ export async function POST(request: Request) {
 
   const model = anthropic(process.env.AI_MODEL ?? "claude-haiku-4-5-20251001");
 
-  const { object: extracted } = await generateObject({
-    model,
-    schema: profileSchema,
-    system: `Du är ett system som extraherar strukturerad profildata från ett onboarding-samtal.
+  let profileData;
+  try {
+    const { object } = await generateObject({
+      model,
+      schema: profileSchema,
+      system: `Du är ett system som extraherar strukturerad profildata från ett onboarding-samtal.
 Basera din extraktion enbart på vad som faktiskt sagts i konversationen.
 Karaktärens namn är: "${characterName}".
 Svara alltid på svenska för textfält.`,
-    messages,
-  });
+      messages,
+    });
+    profileData = object;
+  } catch {
+    return NextResponse.json({ error: "Kunde inte tolka svaren. Försök igen." }, { status: 500 });
+  }
 
   const admin = createAdminClient();
 
@@ -90,13 +96,13 @@ Svara alltid på svenska för textfält.`,
     .upsert(
       {
         user_id: user.id,
-        character_name: extracted.character_name,
-        valued_direction: extracted.valued_direction,
-        main_obstacle: extracted.main_obstacle,
-        current_behavior: extracted.current_behavior ?? null,
-        context: extracted.context,
-        context_detail: extracted.context_detail ?? null,
-        profile_summary: extracted.profile_summary,
+        character_name: profileData.character_name,
+        valued_direction: profileData.valued_direction,
+        main_obstacle: profileData.main_obstacle,
+        current_behavior: profileData.current_behavior ?? null,
+        context: profileData.context,
+        context_detail: profileData.context_detail ?? null,
+        profile_summary: profileData.profile_summary,
       },
       { onConflict: "user_id" }
     )

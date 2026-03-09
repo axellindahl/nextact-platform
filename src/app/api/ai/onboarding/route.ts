@@ -29,16 +29,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Messages required" }, { status: 400 });
   }
 
+  const model = anthropic(process.env.AI_MODEL ?? "claude-haiku-4-5-20251001");
+
   // Crisis detection on latest user message
   const latestUserMessage = messages.findLast((m) => m.role === "user");
   if (latestUserMessage && detectCrisis(latestUserMessage.content)) {
-    return NextResponse.json({
-      role: "assistant",
-      content: CRISIS_RESPONSE_SV,
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(CRISIS_RESPONSE_SV));
+        controller.close();
+      },
+    });
+    return new Response(stream, {
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   }
-
-  const model = anthropic(process.env.AI_MODEL ?? "claude-haiku-4-5-20251001");
 
   const result = streamText({
     model,

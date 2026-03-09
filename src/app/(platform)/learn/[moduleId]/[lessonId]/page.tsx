@@ -5,6 +5,7 @@ import { markLessonStarted } from "@/lib/actions/lessons";
 import type { Json } from "@/lib/supabase/types";
 import type { ContentBlock } from "@/components/features/lms/lesson-feed";
 import { LessonClient } from "./lesson-client";
+import { substituteTemplateVars, type TemplateVars } from "@/lib/services/lms/template-vars";
 
 type Props = {
   params: Promise<{ moduleId: string; lessonId: string }>;
@@ -29,7 +30,8 @@ function parseContentBlocks(
   lessonId: string,
   lessonTitle: string,
   moduleId: string,
-  nextLessonId: string | null
+  nextLessonId: string | null,
+  templateVars: TemplateVars = {}
 ): ContentBlock[] {
   if (!Array.isArray(content)) return [];
 
@@ -53,28 +55,28 @@ function parseContentBlocks(
       case "text":
         blocks.push({
           type: "text",
-          title: b.title ? String(b.title) : undefined,
-          content: String(b.content ?? ""),
+          title: b.title ? substituteTemplateVars(String(b.title), templateVars) : undefined,
+          content: substituteTemplateVars(String(b.content ?? ""), templateVars),
         });
         break;
       case "exercise_text":
         blocks.push({
           type: "exercise_text",
-          prompt: String(b.prompt ?? ""),
-          placeholder: b.placeholder ? String(b.placeholder) : undefined,
+          prompt: substituteTemplateVars(String(b.prompt ?? ""), templateVars),
+          placeholder: b.placeholder ? substituteTemplateVars(String(b.placeholder), templateVars) : undefined,
           maxLength: typeof b.maxLength === "number" ? b.maxLength : undefined,
         });
         break;
       case "exercise_choice":
         blocks.push({
           type: "exercise_choice",
-          question: String(b.question ?? ""),
+          question: substituteTemplateVars(String(b.question ?? ""), templateVars),
           options: Array.isArray(b.options)
             ? b.options.map((o: unknown) => {
                 const opt = o as Record<string, unknown>;
                 return {
                   id: String(opt.id ?? ""),
-                  label: String(opt.label ?? ""),
+                  label: substituteTemplateVars(String(opt.label ?? ""), templateVars),
                 };
               })
             : [],
@@ -121,7 +123,7 @@ function parseContentBlocks(
           )
             ? (b.variant as "insight" | "warning" | "tip")
             : "insight",
-          content: String(b.content ?? ""),
+          content: substituteTemplateVars(String(b.content ?? ""), templateVars),
         });
         break;
       case "ai_prompt":
@@ -136,7 +138,7 @@ function parseContentBlocks(
       case "story":
         blocks.push({
           type: "story",
-          content: String(b.content ?? ""),
+          content: substituteTemplateVars(String(b.content ?? ""), templateVars),
         });
         break;
       case "weekly_task":
@@ -176,9 +178,10 @@ function parseContentBlocks(
 export default async function LessonPage({ params }: Props) {
   const { moduleId, lessonId } = await params;
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // Fetch lesson, module, and sibling lessons in parallel
-  const [lessonResult, moduleResult, siblingsResult] = await Promise.all([
+  // Fetch lesson, module, sibling lessons, and character profile in parallel
+  const [lessonResult, moduleResult, siblingsResult, characterResult] = await Promise.all([
     supabase
       .from("lessons")
       .select("id, title, content, order, module_id")
@@ -195,6 +198,11 @@ export default async function LessonPage({ params }: Props) {
       .eq("module_id", moduleId)
       .eq("status", "published")
       .order("order", { ascending: true }),
+    supabase
+      .from("character_profiles")
+      .select("character_name, valued_direction, main_obstacle, current_behavior, context, context_detail")
+      .eq("user_id", user?.id ?? "")
+      .maybeSingle(),
   ]);
 
   const lesson = lessonResult.data;
@@ -210,6 +218,16 @@ export default async function LessonPage({ params }: Props) {
       ? siblings[currentIndex + 1]
       : null;
 
+  // Build template vars from character profile
+  const templateVars: TemplateVars = {
+    character_name: characterResult.data?.character_name ?? undefined,
+    valued_direction: characterResult.data?.valued_direction ?? undefined,
+    main_obstacle: characterResult.data?.main_obstacle ?? undefined,
+    current_behavior: characterResult.data?.current_behavior ?? undefined,
+    context: characterResult.data?.context ?? undefined,
+    context_detail: characterResult.data?.context_detail ?? undefined,
+  };
+
   // Mark lesson as started
   await markLessonStarted(lessonId);
 
@@ -219,7 +237,8 @@ export default async function LessonPage({ params }: Props) {
     lessonId,
     lesson.title,
     moduleId,
-    nextLesson?.id ?? null
+    nextLesson?.id ?? null,
+    templateVars
   );
 
   return (

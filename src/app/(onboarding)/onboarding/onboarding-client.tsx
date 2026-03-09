@@ -143,6 +143,8 @@ export function OnboardingClient() {
     const text = input.trim();
     if (!text || isStreaming || phase !== "conversation") return;
 
+    const sentText = text; // save before clearing
+
     const userMessage: Message = {
       id: generateId(),
       role: "user",
@@ -196,6 +198,14 @@ export function OnboardingClient() {
         setPhase("naming");
       }
     } catch {
+      // Roll back the user message so retry doesn't duplicate it
+      setMessages(prev => {
+        const lastUserIdx = [...prev].reverse().findIndex(m => m.role === "user");
+        if (lastUserIdx === -1) return prev;
+        const idx = prev.length - 1 - lastUserIdx;
+        return [...prev.slice(0, idx), ...prev.slice(idx + 1)];
+      });
+      setInput(sentText);
       setIsStreaming(false);
       setStreamingContent("");
       setPhase("error");
@@ -273,9 +283,8 @@ export function OnboardingClient() {
         <div className="mx-auto max-w-2xl space-y-6">
           {messages.map((message, index) => {
             if (message.role === "assistant") {
-              const isFirst =
-                index === 0 ||
-                messages.slice(0, index).every((m) => m.role !== "assistant");
+              // Show "Programmet" label only above the very first assistant message
+              const isFirst = index === 0 && message.role === "assistant";
               return (
                 <AssistantMessage
                   key={message.id}

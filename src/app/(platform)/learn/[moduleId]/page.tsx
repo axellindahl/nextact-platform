@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { ActProcess, ProgressStatus } from "@/lib/supabase/types";
 import { getModuleAccess } from "@/lib/services/lms/module-unlock";
 
-const actProcessLabels: Record<ActProcess, string> = {
+const actProcessLabels: Partial<Record<ActProcess, string>> = {
   values: "Värderingar",
   acceptance: "Acceptans",
   defusion: "Defusion",
@@ -13,14 +13,6 @@ const actProcessLabels: Record<ActProcess, string> = {
   self_as_context: "Självet som Kontext",
   committed_action: "Engagerat Handlande",
   integration: "Integration",
-};
-
-const lessonTypeIcons: Record<string, string> = {
-  video: "Film",
-  text: "Text",
-  exercise: "Övning",
-  reflection: "Reflektion",
-  quiz: "Quiz",
 };
 
 type Props = {
@@ -98,123 +90,74 @@ export default async function ModuleDetailPage({ params }: Props) {
     (l) => progressMap.get(l.id) === "completed"
   ).length;
 
+  const actLabel = mod.act_process
+    ? actProcessLabels[mod.act_process as ActProcess]
+    : null;
+
   return (
-    <div className="space-y-8">
+    <div>
       {/* Back link */}
       <Link
         href="/learn"
         className="inline-flex items-center gap-1 text-sm text-charcoal transition-colors hover:text-navy"
       >
-        <svg
-          className="h-4 w-4"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
+        <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M10 12L6 8l4-4" />
         </svg>
         Alla moduler
       </Link>
 
-      {/* Module header */}
-      <div>
-        <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 font-heading text-sm font-bold text-primary">
-            {mod.order}
-          </span>
-          <div>
-            <h1 className="font-heading text-2xl font-bold text-navy sm:text-3xl">
-              {mod.title}
-            </h1>
-            {mod.act_process && (
-              <p className="text-sm text-charcoal">
-                {actProcessLabels[mod.act_process as ActProcess] ?? mod.act_process}
-              </p>
-            )}
-          </div>
-        </div>
-
+      {/* Module header — big and bold like Moodle */}
+      <div className="mt-6 border-b border-navy/10 pb-8">
+        <h1 className="font-heading text-4xl font-extrabold text-navy sm:text-5xl">
+          {mod.title}
+        </h1>
+        {actLabel && (
+          <p className="mt-2 text-base font-medium text-primary">{actLabel}</p>
+        )}
         {mod.description && (
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-charcoal">
             {mod.description}
           </p>
         )}
-
-        <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-charcoal">
-          <span>
-            {completedCount} av {lessons.length} lektioner klara
-          </span>
-          {mod.estimated_duration_minutes && (
-            <>
-              <span
-                className="h-1 w-1 rounded-full bg-light-gray"
-                aria-hidden="true"
-              />
-              <span>ca {mod.estimated_duration_minutes} min</span>
-            </>
-          )}
-        </div>
-
-        {/* Progress bar */}
-        {lessons.length > 0 && (
-          <div className="mt-3 h-1.5 max-w-md overflow-hidden rounded-full bg-off-white-alt">
-            <div
-              className="h-full rounded-full bg-primary transition-all"
-              style={{
-                width: `${Math.round((completedCount / lessons.length) * 100)}%`,
-              }}
-            />
-          </div>
-        )}
+        <p className="mt-4 text-sm text-charcoal">
+          {completedCount} av {lessons.length} lektioner klara
+          {mod.estimated_duration_minutes ? ` · ca ${mod.estimated_duration_minutes} min` : ""}
+        </p>
       </div>
 
       {/* Continue button */}
       {firstIncomplete && (
-        <Link
-          href={`/learn/${moduleId}/${firstIncomplete.id}`}
-          className="inline-flex items-center rounded-[3rem] bg-primary px-6 py-3 font-heading text-base font-semibold text-white shadow-sm shadow-primary/20 transition-all hover:bg-primary-hover"
-        >
-          Fortsätt
-        </Link>
+        <div className="mt-6">
+          <Link
+            href={`/learn/${moduleId}/${firstIncomplete.id}`}
+            className="inline-flex items-center rounded-full bg-primary px-8 py-3 font-heading text-base font-bold text-white transition-all hover:bg-primary-hover"
+          >
+            Fortsätt →
+          </Link>
+        </div>
       )}
 
       {/* Lesson list */}
-      <div className="flex flex-col gap-3">
+      <div className="mt-8 divide-y divide-navy/8">
         {lessons.map((lesson, i) => {
           const status = progressMap.get(lesson.id);
           const isCompleted = status === "completed";
-          const isInProgress = status === "in_progress";
 
           return (
             <Link
               key={lesson.id}
               href={`/learn/${moduleId}/${lesson.id}`}
-              className="flex items-center gap-4 rounded-xl bg-white p-4 transition-all hover:shadow-sm hover:shadow-navy/5"
+              className="flex items-center gap-4 bg-white px-5 py-4 transition-colors first:rounded-t-xl last:rounded-b-xl hover:bg-[#f0f4ff]"
             >
-              {/* Status indicator */}
-              <span
-                className={`
-                  flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-heading text-sm font-bold
-                  ${isCompleted ? "bg-success/15 text-success" : ""}
-                  ${isInProgress ? "bg-primary/10 text-primary" : ""}
-                  ${!isCompleted && !isInProgress ? "bg-off-white-alt text-charcoal" : ""}
-                `}
-              >
+              {/* Status circle */}
+              <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 font-heading text-sm font-bold ${
+                isCompleted
+                  ? "border-success bg-success/10 text-success"
+                  : "border-light-gray text-charcoal"
+              }`}>
                 {isCompleted ? (
-                  <svg
-                    className="h-4 w-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="m4.5 12.75 6 6 9-13.5" />
                   </svg>
                 ) : (
@@ -222,29 +165,11 @@ export default async function ModuleDetailPage({ params }: Props) {
                 )}
               </span>
 
-              <div className="min-w-0 flex-1">
-                <p className="font-heading text-sm font-semibold text-navy">
-                  {lesson.title}
-                </p>
-                <p className="mt-0.5 text-xs text-charcoal">
-                  {lessonTypeIcons[lesson.lesson_type ?? "text"] ?? "Lektion"}
-                  {lesson.duration_seconds
-                    ? ` · ${Math.ceil(lesson.duration_seconds / 60)} min`
-                    : ""}
-                </p>
-              </div>
+              <p className="flex-1 font-heading text-base font-semibold text-navy">
+                {lesson.title}
+              </p>
 
-              {/* Arrow */}
-              <svg
-                className="h-4 w-4 shrink-0 text-light-gray"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
+              <svg className="h-4 w-4 shrink-0 text-light-gray" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M6 4l4 4-4 4" />
               </svg>
             </Link>

@@ -167,7 +167,8 @@ export function OnboardingClient() {
       });
 
       if (!response.ok || !response.body) {
-        throw new Error("Servern svarade med ett fel.");
+        const text = await response.text().catch(() => "");
+        throw new Error(text || "Servern svarade med ett fel.");
       }
 
       const reader = response.body.getReader();
@@ -183,6 +184,10 @@ export function OnboardingClient() {
       }
 
       // Stream complete — commit the final message
+      if (!accumulated.trim()) {
+        throw new Error("Inget svar mottogs. Försök igen.");
+      }
+
       const finalMessage: Message = {
         id: generateId(),
         role: "assistant",

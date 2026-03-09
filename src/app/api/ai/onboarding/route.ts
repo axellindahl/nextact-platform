@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { streamText } from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { createClient } from "@/lib/supabase/server";
 import {
   detectCrisis,
@@ -12,6 +12,13 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  // Fail fast if API key is not configured
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    console.error("ANTHROPIC_API_KEY is not set");
+    return NextResponse.json({ error: "AI not configured" }, { status: 503 });
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,7 +36,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Messages required" }, { status: 400 });
   }
 
-  const model = anthropic(process.env.AI_MODEL ?? "claude-haiku-4-5-20251001");
+  const anthropicProvider = createAnthropic({ apiKey });
+  const model = anthropicProvider(
+    process.env.AI_MODEL ?? "claude-haiku-4-5-20251001"
+  );
 
   // Crisis detection on latest user message
   const latestUserMessage = messages.findLast((m) => m.role === "user");
@@ -46,14 +56,19 @@ export async function POST(request: Request) {
     });
   }
 
-  const result = streamText({
-    model,
-    system: ONBOARDING_SYSTEM_PROMPT,
-    messages: messages.map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    })),
-  });
+  try {
+    const result = streamText({
+      model,
+      system: ONBOARDING_SYSTEM_PROMPT,
+      messages: messages.map((m) => ({
+        role: m.role as "user" | "assistant",
+        content: m.content,
+      })),
+    });
 
-  return result.toTextStreamResponse();
+    return result.toTextStreamResponse();
+  } catch (error) {
+    console.error("streamText error:", error);
+    return NextResponse.json({ error: "AI error" }, { status: 500 });
+  }
 }

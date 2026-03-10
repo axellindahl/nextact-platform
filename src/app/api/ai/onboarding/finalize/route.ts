@@ -79,6 +79,13 @@ export async function POST(request: Request) {
   const anthropicProvider = createAnthropic({ apiKey });
   const model = anthropicProvider(process.env.AI_MODEL ?? "claude-haiku-4-5-20251001");
 
+  // Format conversation as a single prompt to avoid Anthropic's
+  // strict user/assistant alternation requirement (the last message
+  // in the onboarding flow is always an assistant PROFIL_KLAR message).
+  const conversationText = messages
+    .map((m) => `${m.role === "user" ? "Användare" : "Program"}: ${m.content}`)
+    .join("\n\n");
+
   let profileData;
   try {
     const { object } = await generateObject({
@@ -88,7 +95,7 @@ export async function POST(request: Request) {
 Basera din extraktion enbart på vad som faktiskt sagts i konversationen.
 Karaktärens namn är: "${characterName}".
 Svara alltid på svenska för textfält.`,
-      messages,
+      prompt: conversationText,
     });
     profileData = object;
   } catch (err) {

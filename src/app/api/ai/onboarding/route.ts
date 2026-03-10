@@ -56,6 +56,10 @@ export async function POST(request: Request) {
     });
   }
 
+  console.log("[onboarding] model:", process.env.AI_MODEL ?? "claude-haiku-4-5-20251001");
+  console.log("[onboarding] messages count:", messages.length);
+  console.log("[onboarding] first message role:", messages[0]?.role);
+
   const result = streamText({
     model,
     system: ONBOARDING_SYSTEM_PROMPT,
@@ -63,6 +67,9 @@ export async function POST(request: Request) {
       role: m.role as "user" | "assistant",
       content: m.content,
     })),
+    onError: ({ error }) => {
+      console.error("[onboarding] streamText error:", String(error));
+    },
   });
 
   return result.toTextStreamResponse();

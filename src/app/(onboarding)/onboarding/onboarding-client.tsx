@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { TextStreamChatTransport, isTextUIPart, type UIMessage } from "ai";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ONBOARDING_INITIAL_MESSAGE } from "@/lib/services/ai/onboarding-prompt";
@@ -19,6 +20,10 @@ function stripProfilKlar(text: string): string {
 
 function hasProfilKlar(text: string): boolean {
   return text.includes(PROFIL_KLAR_PREFIX);
+}
+
+function getMessageText(message: UIMessage): string {
+  return message.parts.filter(isTextUIPart).map((p) => p.text).join("");
 }
 
 // ─── Typing dots ─────────────────────────────────────────────────────────────
@@ -90,34 +95,46 @@ export function OnboardingClient() {
   const [phase, setPhase] = useState<Phase>("conversation");
   const [characterName, setCharacterName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [input, setInput] = useState("");
 
-  const { messages, input, setInput, handleSubmit, isLoading, error } =
-    useChat({
+  const { messages, sendMessage, status, error } = useChat({
+    transport: new TextStreamChatTransport({
       api: "/api/ai/onboarding",
-      initialMessages: [
-        {
-          id: "initial",
-          role: "assistant",
-          content: ONBOARDING_INITIAL_MESSAGE,
+      prepareSendMessagesRequest: ({ messages: uiMessages }) => ({
+        body: {
+          messages: uiMessages.map((m) => ({
+            role: m.role,
+            content: getMessageText(m),
+          })),
         },
-      ],
-      onFinish: (message) => {
-        if (hasProfilKlar(message.content)) {
-          setPhase("naming");
-        }
+      }),
+    }),
+    messages: [
+      {
+        id: "initial",
+        role: "assistant" as const,
+        parts: [{ type: "text" as const, text: ONBOARDING_INITIAL_MESSAGE }],
       },
-      onError: (err) => {
-        setPhase("error");
-        setErrorMessage(err.message || "Något gick fel. Försök igen.");
-      },
-    });
+    ],
+    onFinish: ({ message }) => {
+      if (hasProfilKlar(getMessageText(message))) {
+        setPhase("naming");
+      }
+    },
+    onError: (err) => {
+      setPhase("error");
+      setErrorMessage(err.message || "Något gick fel. Försök igen.");
+    },
+  });
+
+  const isStreaming = status === "streaming" || status === "submitted";
 
   // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, isLoading]);
+  }, [messages, isStreaming]);
 
   // Focus input when phase changes back to conversation
   useEffect(() => {
@@ -134,6 +151,17 @@ export function OnboardingClient() {
     }
   }, [error]);
 
+  const handleFormSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      const text = input.trim();
+      if (!text || isStreaming || phase === "error") return;
+      void sendMessage({ text });
+      setInput("");
+    },
+    [input, isStreaming, phase, sendMessage],
+  );
+
   const handleFinalize = useCallback(async () => {
     const name = characterName.trim();
     if (!name || phase !== "naming") return;
@@ -142,7 +170,7 @@ export function OnboardingClient() {
 
     const apiMessages = messages
       .slice(1) // skip initial static message
-      .map((m) => ({ role: m.role, content: m.content }));
+      .map((m) => ({ role: m.role, content: getMessageText(m) }));
 
     try {
       const response = await fetch("/api/ai/onboarding/finalize", {
@@ -159,7 +187,6 @@ export function OnboardingClient() {
     }
   }, [characterName, messages, phase, router]);
 
-  const isStreaming = isLoading;
   const lastAssistantIndex = messages
     .map((m, i) => (m.role === "assistant" ? i : -1))
     .filter((i) => i !== -1)
@@ -192,13 +219,13 @@ export function OnboardingClient() {
               return (
                 <AssistantMessage
                   key={message.id}
-                  content={message.content}
+                  content={getMessageText(message)}
                   isFirst={isFirst}
                   isStreaming={isStreamingThis}
                 />
               );
             }
-            return <UserMessage key={message.id} content={message.content} />;
+            return <UserMessage key={message.id} content={getMessageText(message)} />;
           })}
 
           {/* Waiting dots — shown after user sends, before first chunk */}
@@ -273,7 +300,7 @@ export function OnboardingClient() {
       {(phase === "conversation" || phase === "error") && (
         <div className="flex-none border-t border-navy/8 bg-white px-5 py-4 sm:px-8">
           <div className="mx-auto max-w-2xl">
-            <form onSubmit={handleSubmit} className="flex gap-3">
+            <form onSubmit={handleFormSubmit} className="flex gap-3">
               <input
                 ref={inputRef}
                 type="text"

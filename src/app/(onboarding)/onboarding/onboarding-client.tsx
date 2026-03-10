@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { TextStreamChatTransport, isTextUIPart, type UIMessage } from "ai";
+import { DefaultChatTransport, isTextUIPart, type UIMessage } from "ai";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ONBOARDING_INITIAL_MESSAGE } from "@/lib/services/ai/onboarding-prompt";
@@ -98,7 +98,7 @@ export function OnboardingClient() {
   const [input, setInput] = useState("");
 
   const { messages, sendMessage, status, error } = useChat({
-    transport: new TextStreamChatTransport({
+    transport: new DefaultChatTransport({
       api: "/api/ai/onboarding",
       prepareSendMessagesRequest: ({ messages: uiMessages }) => ({
         body: {

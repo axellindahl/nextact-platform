@@ -86,7 +86,7 @@ export function ModuleCard({
               actProcess ? actProcessLabels[actProcess] : null,
               estimatedMinutes ? `${estimatedMinutes} min` : null,
               !isLocked && lessonsTotal > 0
-                ? `${lessonsCompleted} av ${lessonsTotal} lektioner`
+                ? `${lessonsCompleted} av ${lessonsTotal} delar`
                 : null,
             ]
               .filter(Boolean)

@@ -139,14 +139,14 @@ export function CompletionCard({
               href={nextLessonHref}
               className="inline-flex items-center justify-center rounded-[3rem] bg-primary px-8 py-4 font-heading text-base font-semibold text-white shadow-lg shadow-primary/25 transition-all hover:bg-primary-hover"
             >
-              Nästa lektion
+              Nästa del →
             </Link>
           )}
           <Link
             href={moduleHref}
             className="inline-flex items-center justify-center rounded-[3rem] px-6 py-3 text-sm font-medium text-charcoal transition-colors hover:text-navy hover:bg-navy/5 font-heading"
           >
-            Tillbaka till modulen
+            Tillbaka till resan
           </Link>
         </motion.div>
       </div>

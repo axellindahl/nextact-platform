@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { VideoCard } from "@/components/features/lms/cards/video-card";
 import { TextCard } from "@/components/features/lms/cards/text-card";
 import { ExerciseTextCard } from "@/components/features/lms/cards/exercise-text-card";
@@ -16,83 +17,26 @@ import { BollplankPromptCard } from "@/components/features/lms/cards/bollplank-p
 
 // ── Content block types ────────────────────────────────────────────
 
-type VideoBlock = {
-  type: "video";
-  title: string;
-  videoId?: string;
-};
-
-type TextBlock = {
-  type: "text";
-  title?: string;
-  content: string;
-};
-
-type ExerciseTextBlock = {
-  type: "exercise_text";
-  prompt: string;
-  placeholder?: string;
-  maxLength?: number;
-};
-
-type ExerciseChoiceBlock = {
-  type: "exercise_choice";
-  question: string;
-  options: { id: string; label: string }[];
-  allowMultiple?: boolean;
-};
-
-type ExerciseSortingBlock = {
-  type: "exercise_sorting";
-  instruction: string;
-  items: { id: string; label: string }[];
-};
-
-type QuizBlock = {
-  type: "quiz";
-  question: string;
-  options: { id: string; label: string; correct: boolean }[];
-  explanation: string;
-};
-
-type CalloutBlock = {
-  type: "callout";
-  variant: "insight" | "warning" | "tip";
-  content: string;
-};
-
-type AiPromptBlock = {
-  type: "ai_prompt";
-  prompt: string;
-  lessonId: string;
-};
-
-type CompletionBlock = {
-  type: "completion";
-  lessonTitle: string;
-  timeSpentMinutes?: number;
-  exercisesCompleted?: number;
-  nextLessonHref?: string;
-  moduleHref: string;
-};
-
+type VideoBlock = { type: "video"; title: string; videoId?: string };
+type TextBlock = { type: "text"; title?: string; content: string };
+type ExerciseTextBlock = { type: "exercise_text"; prompt: string; placeholder?: string; maxLength?: number };
+type ExerciseChoiceBlock = { type: "exercise_choice"; question: string; options: { id: string; label: string }[]; allowMultiple?: boolean };
+type ExerciseSortingBlock = { type: "exercise_sorting"; instruction: string; items: { id: string; label: string }[] };
+type QuizBlock = { type: "quiz"; question: string; options: { id: string; label: string; correct: boolean }[]; explanation: string };
+type CalloutBlock = { type: "callout"; variant: "insight" | "warning" | "tip"; content: string };
+type AiPromptBlock = { type: "ai_prompt"; prompt: string; lessonId: string };
+type CompletionBlock = { type: "completion"; lessonTitle: string; timeSpentMinutes?: number; exercisesCompleted?: number; nextLessonHref?: string; moduleHref: string };
 type StoryBlock = { type: "story"; content: string };
 type WeeklyTaskBlock = { type: "weekly_task"; tasks: string[]; moduleTitle?: string };
 type BollplankPromptBlock = { type: "bollplank_prompt"; prompt: string };
 
 export type ContentBlock =
-  | VideoBlock
-  | TextBlock
-  | ExerciseTextBlock
-  | ExerciseChoiceBlock
-  | ExerciseSortingBlock
-  | QuizBlock
-  | CalloutBlock
-  | AiPromptBlock
-  | CompletionBlock
-  | StoryBlock
-  | WeeklyTaskBlock
-  | BollplankPromptBlock;
+  | VideoBlock | TextBlock | ExerciseTextBlock | ExerciseChoiceBlock
+  | ExerciseSortingBlock | QuizBlock | CalloutBlock | AiPromptBlock
+  | CompletionBlock | StoryBlock | WeeklyTaskBlock | BollplankPromptBlock;
+
+// ── Types that require submission before continuing ─────────────────
+const EXERCISE_TYPES = new Set(["exercise_text", "exercise_choice", "exercise_sorting", "quiz"]);
 
 // ── Feed component ─────────────────────────────────────────────────
 
@@ -102,72 +46,45 @@ type LessonFeedProps = {
   onExerciseSubmit?: (blockIndex: number, response: unknown) => void;
 };
 
-export function LessonFeed({
-  blocks,
-  onCardChange,
-  onExerciseSubmit,
-}: LessonFeedProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+export function LessonFeed({ blocks, onCardChange, onExerciseSubmit }: LessonFeedProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [exerciseDone, setExerciseDone] = useState(false);
 
-  const setCardRef = useCallback(
-    (index: number) => (el: HTMLDivElement | null) => {
-      cardRefs.current[index] = el;
-    },
-    []
-  );
+  const currentBlock = blocks[currentIndex];
+  const isCompletion = currentBlock?.type === "completion";
+  const isExercise = EXERCISE_TYPES.has(currentBlock?.type ?? "");
+  const showContinue = !isCompletion && (!isExercise || exerciseDone);
 
-  // IntersectionObserver for active card detection
-  useEffect(() => {
-    if (!onCardChange) return;
+  function advance() {
+    const next = currentIndex + 1;
+    if (next >= blocks.length) return;
+    setExerciseDone(false);
+    setCurrentIndex(next);
+    onCardChange?.(next);
+  }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const index = cardRefs.current.indexOf(
-              entry.target as HTMLDivElement
-            );
-            if (index !== -1) {
-              onCardChange(index);
-            }
-          }
-        }
-      },
-      { threshold: 0.5 }
-    );
+  async function handleExerciseSubmit(blockIndex: number, response: unknown) {
+    await onExerciseSubmit?.(blockIndex, response);
+    setExerciseDone(true);
+  }
 
-    const currentRefs = cardRefs.current;
-    for (const ref of currentRefs) {
-      if (ref) observer.observe(ref);
-    }
-
-    return () => {
-      for (const ref of currentRefs) {
-        if (ref) observer.unobserve(ref);
-      }
-    };
-  }, [blocks.length, onCardChange]);
-
-  function renderBlock(block: ContentBlock, index: number) {
+  function renderBlock(block: ContentBlock) {
     switch (block.type) {
       case "video":
-        return (
-          <VideoCard
-            title={block.title}
-            videoId={block.videoId}
-            onContinue={() => scrollToCard(index + 1)}
-          />
-        );
+        return <VideoCard title={block.title} videoId={block.videoId} />;
       case "text":
-        return <TextCard title={block.title} content={block.content} onContinue={() => scrollToCard(index + 1)} />;
+        return <TextCard title={block.title} content={block.content} />;
+      case "story":
+        return <StoryCard content={block.content} />;
+      case "callout":
+        return <CalloutCard variant={block.variant} content={block.content} />;
       case "exercise_text":
         return (
           <ExerciseTextCard
             prompt={block.prompt}
             placeholder={block.placeholder}
             maxLength={block.maxLength}
-            onSubmit={(response) => onExerciseSubmit?.(index, response)}
+            onSubmit={(r) => handleExerciseSubmit(currentIndex, r)}
           />
         );
       case "exercise_choice":
@@ -176,7 +93,7 @@ export function LessonFeed({
             question={block.question}
             options={block.options}
             allowMultiple={block.allowMultiple}
-            onSubmit={(selected) => onExerciseSubmit?.(index, selected)}
+            onSubmit={(r) => handleExerciseSubmit(currentIndex, r)}
           />
         );
       case "exercise_sorting":
@@ -184,7 +101,7 @@ export function LessonFeed({
           <ExerciseSortingCard
             instruction={block.instruction}
             items={block.items}
-            onSubmit={(ordered) => onExerciseSubmit?.(index, ordered)}
+            onSubmit={(r) => handleExerciseSubmit(currentIndex, r)}
           />
         );
       case "quiz":
@@ -193,15 +110,15 @@ export function LessonFeed({
             question={block.question}
             options={block.options}
             explanation={block.explanation}
-            onAnswer={(selectedId, isCorrect) =>
-              onExerciseSubmit?.(index, { selectedId, isCorrect })
-            }
+            onAnswer={(id, correct) => handleExerciseSubmit(currentIndex, { id, correct })}
           />
         );
-      case "callout":
-        return <CalloutCard variant={block.variant} content={block.content} />;
       case "ai_prompt":
         return <AiPromptCard prompt={block.prompt} lessonId={block.lessonId} />;
+      case "bollplank_prompt":
+        return <BollplankPromptCard prompt={block.prompt} onOpen={advance} />;
+      case "weekly_task":
+        return <WeeklyTaskCard tasks={block.tasks} moduleTitle={block.moduleTitle} />;
       case "completion":
         return (
           <CompletionCard
@@ -212,36 +129,51 @@ export function LessonFeed({
             moduleHref={block.moduleHref}
           />
         );
-      case "story":
-        return <StoryCard content={block.content} onContinue={() => scrollToCard(index + 1)} />;
-      case "weekly_task":
-        return <WeeklyTaskCard tasks={block.tasks} moduleTitle={block.moduleTitle} />;
-      case "bollplank_prompt":
-        return <BollplankPromptCard prompt={block.prompt} onOpen={() => scrollToCard(index + 1)} />;
-    }
-  }
-
-  function scrollToCard(index: number) {
-    const card = cardRefs.current[index];
-    if (card) {
-      card.scrollIntoView({ behavior: "smooth" });
     }
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="mx-auto max-w-4xl"
-    >
-      {blocks.map((block, index) => (
-        <div
-          key={index}
-          ref={setCardRef(index)}
-          className="w-full"
+    <div className="flex min-h-dvh flex-col">
+      {/* Progress bar */}
+      <div className="h-1 w-full bg-navy/8">
+        <motion.div
+          className="h-full bg-primary"
+          animate={{ width: `${((currentIndex + 1) / blocks.length) * 100}%` }}
+          transition={{ duration: 0.3 }}
+        />
+      </div>
+
+      {/* Card */}
+      <div className="relative flex-1 overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ x: 40, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -40, opacity: 0 }}
+            transition={{ duration: 0.22, ease: "easeInOut" }}
+            className="w-full"
+          >
+            {renderBlock(currentBlock)}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Fortsätt-knapp */}
+      {showContinue && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex-none border-t border-navy/8 bg-white px-5 py-4 sm:px-8"
         >
-          {renderBlock(block, index)}
-        </div>
-      ))}
+          <button
+            onClick={advance}
+            className="w-full rounded-full bg-primary py-3.5 font-heading text-sm font-semibold text-white transition-all hover:bg-primary-hover sm:w-auto sm:px-10"
+          >
+            Fortsätt
+          </button>
+        </motion.div>
+      )}
     </div>
   );
 }

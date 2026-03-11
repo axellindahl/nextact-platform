@@ -45,7 +45,7 @@ export function ExerciseChoiceCard({
   }
 
   return (
-    <div className="flex h-dvh items-center justify-center bg-off-white p-6">
+    <div className="w-full bg-off-white px-6 py-10 sm:px-10">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}

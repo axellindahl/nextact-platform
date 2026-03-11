@@ -28,7 +28,7 @@ export function ExerciseSortingCard({
   }
 
   return (
-    <div className="flex h-dvh items-center justify-center bg-off-white p-6">
+    <div className="w-full bg-off-white px-6 py-10 sm:px-10">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -84,7 +84,7 @@ export function ExerciseSortingCard({
           type="button"
           onClick={handleSubmit}
           disabled={submitted}
-          className="self-end rounded-[3rem] bg-primary px-8 py-3 font-heading text-base font-semibold text-white shadow-sm shadow-primary/20 transition-all hover:bg-primary-hover disabled:opacity-50 disabled:pointer-events-none"
+          className="w-full rounded-full bg-primary py-3.5 font-heading text-sm font-semibold text-white transition-all hover:bg-primary-hover disabled:opacity-50 disabled:pointer-events-none"
         >
           {submitted ? "Skickat" : "Bekräfta ordning"}
         </button>

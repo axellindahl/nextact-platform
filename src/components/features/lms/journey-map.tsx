@@ -24,27 +24,10 @@ const HOTSPOT_POSITIONS: Record<number, { x: number; y: number }> = {
   7: { x: 86, y: 21 },
 };
 
-function LockIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M17 11V7A5 5 0 0 0 7 7v4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2zm-5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-6H9V7a3 3 0 0 1 6 0v4z" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
 function Hotspot({ step, onClick }: { step: Step; onClick: () => void }) {
   const pos = HOTSPOT_POSITIONS[step.order];
   if (!pos) return null;
 
-  const isCompleted = step.status === "completed";
   const isActive = step.status === "active";
   const isLocked = step.status === "locked";
 
@@ -52,36 +35,24 @@ function Hotspot({ step, onClick }: { step: Step; onClick: () => void }) {
     <button
       onClick={isLocked ? undefined : onClick}
       disabled={isLocked}
-      title={isLocked ? "Låst" : step.title}
+      title={step.title}
       aria-label={`Steg ${step.order}: ${step.title}${isLocked ? " (låst)" : ""}`}
       style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-      className="absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none"
+      className={`group absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}`}
     >
-      {/* Pulse ring for active step */}
+      {/* Subtle pulse for active step */}
       {isActive && (
-        <span className="absolute inset-0 -m-1.5 animate-ping rounded-full bg-white/60" />
+        <span className="absolute inset-0 animate-ping rounded-full bg-white/40" />
       )}
 
-      {/* Main circle */}
+      {/* Transparent hit area — size matches the circles in the image */}
       <span
         className={`
-          relative flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-bold shadow-md transition-transform
-          ${isCompleted
-            ? "border-white bg-green-500 text-white hover:scale-110"
-            : isActive
-              ? "border-white bg-white text-navy scale-110 shadow-lg hover:scale-[1.15]"
-              : "border-white/30 bg-black/40 text-white/50 cursor-not-allowed"
-          }
+          relative flex h-10 w-10 rounded-full transition-all duration-150
+          ${!isLocked ? "group-hover:bg-white/20 group-hover:scale-110 group-hover:shadow-lg" : ""}
+          ${isActive ? "bg-white/10 scale-110" : ""}
         `}
-      >
-        {isCompleted ? (
-          <CheckIcon />
-        ) : isLocked ? (
-          <LockIcon />
-        ) : (
-          step.order
-        )}
-      </span>
+      />
 
       {/* Tooltip on hover */}
       {!isLocked && (

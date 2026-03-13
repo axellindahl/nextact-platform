@@ -19,7 +19,7 @@ import { BollplankPromptCard } from "@/components/features/lms/cards/bollplank-p
 
 type VideoBlock = { type: "video"; title: string; videoId?: string };
 type TextBlock = { type: "text"; title?: string; content: string };
-type ExerciseTextBlock = { type: "exercise_text"; prompt: string; placeholder?: string; maxLength?: number };
+type ExerciseTextBlock = { type: "exercise_text"; prompt: string; placeholder?: string; maxLength?: number; aiFeedbackContext?: "valued_direction" | "obstacle" | "key_action" };
 type ExerciseChoiceBlock = { type: "exercise_choice"; question: string; options: { id: string; label: string }[]; allowMultiple?: boolean };
 type ExerciseSortingBlock = { type: "exercise_sorting"; instruction: string; items: { id: string; label: string }[] };
 type QuizBlock = { type: "quiz"; question: string; options: { id: string; label: string; correct: boolean }[]; explanation: string };
@@ -84,6 +84,7 @@ export function LessonFeed({ blocks, onCardChange, onExerciseSubmit }: LessonFee
             prompt={block.prompt}
             placeholder={block.placeholder}
             maxLength={block.maxLength}
+            aiFeedbackContext={block.aiFeedbackContext}
             onSubmit={(r) => handleExerciseSubmit(currentIndex, r)}
           />
         );

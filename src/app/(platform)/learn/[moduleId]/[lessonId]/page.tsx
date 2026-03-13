@@ -59,14 +59,21 @@ function parseContentBlocks(
           content: substituteTemplateVars(String(b.content ?? ""), templateVars),
         });
         break;
-      case "exercise_text":
+      case "exercise_text": {
+        const validContexts = ["valued_direction", "obstacle", "key_action"] as const;
+        type AiCtx = typeof validContexts[number];
+        const aiFeedbackContext = validContexts.includes(b.aiFeedbackContext as AiCtx)
+          ? (b.aiFeedbackContext as AiCtx)
+          : undefined;
         blocks.push({
           type: "exercise_text",
           prompt: substituteTemplateVars(String(b.prompt ?? ""), templateVars),
           placeholder: b.placeholder ? substituteTemplateVars(String(b.placeholder), templateVars) : undefined,
           maxLength: typeof b.maxLength === "number" ? b.maxLength : undefined,
+          aiFeedbackContext,
         });
         break;
+      }
       case "exercise_choice":
         blocks.push({
           type: "exercise_choice",

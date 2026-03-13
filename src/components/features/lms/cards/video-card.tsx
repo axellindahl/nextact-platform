@@ -6,18 +6,11 @@ type VideoCardProps = {
   title: string;
   videoId?: string;
   onComplete?: () => void;
-  onContinue?: () => void;
 };
 
-export function VideoCard({
-  title,
-  videoId,
-  onComplete,
-  onContinue,
-}: VideoCardProps) {
+export function VideoCard({ title, videoId, onComplete }: VideoCardProps) {
   return (
-    <div className="w-full bg-white">
-      {/* Video — full content width */}
+    <div className="w-full bg-[#0f1f3d]">
       {videoId ? (
         <VimeoPlayer
           videoId={videoId}
@@ -25,22 +18,23 @@ export function VideoCard({
           className="w-full rounded-none"
         />
       ) : (
-        <div className="aspect-video w-full bg-gray-100" />
+        <div className="aspect-video w-full flex items-center justify-center bg-white/5">
+          <div className="text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
+              <svg className="h-7 w-7 text-white/60" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+            <p className="mt-3 text-sm text-white/40">Video kommer snart</p>
+          </div>
+        </div>
       )}
 
-      {/* Title + continue button */}
-      <div className="px-6 py-8 sm:px-8">
-        {title && (
-          <h2 className="font-heading text-2xl font-bold text-navy">{title}</h2>
-        )}
-        <button
-          type="button"
-          onClick={onContinue}
-          className="mt-6 inline-flex items-center rounded-full bg-primary px-8 py-3 font-heading text-base font-bold text-white transition-all hover:bg-primary-hover"
-        >
-          Fortsätt →
-        </button>
-      </div>
+      {title && (
+        <div className="px-6 py-6 sm:px-10">
+          <h2 className="font-heading text-xl font-bold text-white">{title}</h2>
+        </div>
+      )}
     </div>
   );
 }

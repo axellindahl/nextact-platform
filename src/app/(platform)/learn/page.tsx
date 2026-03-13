@@ -110,7 +110,7 @@ export default async function ModuleListPage() {
               Personalisera ditt program
             </p>
             <p className="mt-0.5 text-sm text-charcoal">
-              Skapa din karaktär så anpassar vi innehållet efter dig.
+              Berätta om dig så anpassar vi programmet efter dina mål.
             </p>
           </div>
           <span className="shrink-0 font-heading text-sm font-bold text-primary group-hover:underline">
@@ -121,7 +121,7 @@ export default async function ModuleListPage() {
 
       <div>
         <h1 className="font-heading text-2xl font-bold text-navy sm:text-3xl">
-          {characterProfile ? `${characterProfile.character_name}s resa` : "Din resa"}
+          Din resa
         </h1>
         <p className="mt-1 text-charcoal">
           Klicka på ett steg på kartan för att fortsätta.

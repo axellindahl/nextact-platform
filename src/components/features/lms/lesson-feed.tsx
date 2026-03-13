@@ -38,6 +38,9 @@ export type ContentBlock =
 // ── Types that require submission before continuing ─────────────────
 const EXERCISE_TYPES = new Set(["exercise_text", "exercise_choice", "exercise_sorting", "quiz"]);
 
+// ── Types that manage their own CTA (no sticky Fortsätt) ────────────
+const SELF_NAVIGATING_TYPES = new Set(["bollplank_prompt", "ai_prompt"]);
+
 // ── Feed component ─────────────────────────────────────────────────
 
 type LessonFeedProps = {
@@ -53,7 +56,8 @@ export function LessonFeed({ blocks, onCardChange, onExerciseSubmit }: LessonFee
   const currentBlock = blocks[currentIndex];
   const isCompletion = currentBlock?.type === "completion";
   const isExercise = EXERCISE_TYPES.has(currentBlock?.type ?? "");
-  const showContinue = !isCompletion && (!isExercise || exerciseDone);
+  const isSelfNavigating = SELF_NAVIGATING_TYPES.has(currentBlock?.type ?? "");
+  const showContinue = !isCompletion && !isSelfNavigating && (!isExercise || exerciseDone);
 
   function advance() {
     const next = currentIndex + 1;
